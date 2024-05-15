@@ -68,12 +68,43 @@ class PullRequestCommand(Command):
         finally:
             spinner.stop()
 
+    # def generate_html_diff(self, output):
+    #     """Convierte la salida de diff en un formato HTML para VuePress."""
+    #     diff_lines = output.splitlines()
+    #     html_lines = []
+    #     # html_lines.append()
+    #     html_lines.append('<pre><code class="diff">')
+
+    #     for line in diff_lines:
+    #         escaped_line = (
+    #             line.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    #         )
+
+    #         if line.startswith("Index:") or line.startswith("==="):
+    #             html_lines.append(f'<span class="diff-header">{escaped_line}</span>')
+    #         elif line.startswith("---"):
+    #             html_lines.append(
+    #                 f'<span class="diff-minus-header">{escaped_line}</span>'
+    #             )
+    #         elif line.startswith("+++"):
+    #             html_lines.append(
+    #                 f'<span class="diff-plus-header">{escaped_line}</span>'
+    #             )
+    #         elif line.startswith("-"):
+    #             html_lines.append(f'<span class="diff-minus">{escaped_line}</span>')
+    #         elif line.startswith("+"):
+    #             html_lines.append(f'<span class="diff-plus">{escaped_line}</span>')
+    #         else:
+    #             html_lines.append(escaped_line)
+
+    #     html_lines.append("</code></pre>")
+
+    #     return "\n".join(html_lines)
     def generate_html_diff(self, output):
         """Convierte la salida de diff en un formato HTML para VuePress."""
         diff_lines = output.splitlines()
         html_lines = []
-        # html_lines.append()
-        html_lines.append('<pre><code class="diff">')
+        html_lines.append('<pre><code class="sv2-pull-request-diff">')
 
         for line in diff_lines:
             escaped_line = (
@@ -81,19 +112,15 @@ class PullRequestCommand(Command):
             )
 
             if line.startswith("Index:") or line.startswith("==="):
-                html_lines.append(f'<span class="diff-header">{escaped_line}</span>')
+                html_lines.append(f'<span class="sv2-pull-request-diff-header">{escaped_line}</span>')
             elif line.startswith("---"):
-                html_lines.append(
-                    f'<span class="diff-minus-header">{escaped_line}</span>'
-                )
+                html_lines.append(f'<span class="sv2-pull-request-diff-minus-header">{escaped_line}</span>')
             elif line.startswith("+++"):
-                html_lines.append(
-                    f'<span class="diff-plus-header">{escaped_line}</span>'
-                )
+                html_lines.append(f'<span class="sv2-pull-request-diff-plus-header">{escaped_line}</span>')
             elif line.startswith("-"):
-                html_lines.append(f'<span class="diff-minus">{escaped_line}</span>')
+                html_lines.append(f'<span class="sv2-pull-request-diff-minus">{escaped_line}</span>')
             elif line.startswith("+"):
-                html_lines.append(f'<span class="diff-plus">{escaped_line}</span>')
+                html_lines.append(f'<span class="sv2-pull-request-diff-plus">{escaped_line}</span>')
             else:
                 html_lines.append(escaped_line)
 

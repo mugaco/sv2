@@ -1,7 +1,7 @@
 import subprocess
 from colorama import Fore, Style
 from . import Command
-from helpers import get_branch_name_from_aliases, get_alias_from_branch_name, get_parent
+from helpers import get_branch_name_from_aliases, get_alias_from_branch_name, get_parent,mprint
 
 
 class MergeCommand(Command):
@@ -29,11 +29,7 @@ class MergeCommand(Command):
             return
         # print(self.app.pre_name)
         if parent == self.app.main_name:
-            print(
-                Fore.RED
-                + f"Una rama de nivel 'proyecto' no debe fusionarse directamente a 'pre'. En su lugar hacer 'sv2 to rama-proyecto' y desde ahí solicitar un pull request con 'sv2 pr'."
-                + Style.RESET_ALL
-            )
+            mprint(f"Una rama de nivel 'proyecto' no debe fusionarse directamente a 'pre'. En su lugar hacer 'sv2 to rama-proyecto' y desde ahí solicitar un pull request con 'sv2 pr'.","i",True)
             return
         branch_name = get_branch_name_from_aliases(args.alias, self.app.aliases)
         # print(self.app.aliases)

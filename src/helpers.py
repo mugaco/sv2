@@ -262,31 +262,25 @@ def is_not_empty(answers, current):
 
 def dialog(questions, rules=None):
     if isinstance(questions, str):
-        questions_list = [
-            inquirer.Text('v', message=questions, validate=is_not_empty if (rules and 'required' in rules) else None),
-        ]
-        answers = inquirer.prompt(questions_list)
-        return answers['v']
-    
-    elif isinstance(questions, dict):
-        questions_list = []
-        for key, message in questions.items():
-            if rules and key in rules:
-                rule = rules[key]
-                if 'email' in rule:
-                    questions_list.append(inquirer.Text(key, message=message, validate=is_email))
-                elif 'required' in rule:
-                    questions_list.append(inquirer.Text(key, message=message, validate=is_not_empty))
-                else:
-                    questions_list.append(inquirer.Text(key, message=message))
+        questions = {"ques":questions}
+        rules = {"ques":"required"}
+           
+    questions_list = []
+    for key, message in questions.items():
+        if rules and key in rules:
+            rule = rules[key]
+            if 'email' in rule:
+                questions_list.append(inquirer.Text(key, message=message, validate=is_email))
+            elif 'required' in rule:
+                questions_list.append(inquirer.Text(key, message=message, validate=is_not_empty))
             else:
                 questions_list.append(inquirer.Text(key, message=message))
+        else:
+            questions_list.append(inquirer.Text(key, message=message))
         
-        answers = inquirer.prompt(questions_list)
-        return answers
+    answers = inquirer.prompt(questions_list)
+    return answers
     
-    else:
-        raise ValueError("El argumento debe ser una cadena o un diccionario")
 # def dialog(questions):
 #     if isinstance(questions, str):
 #         questions_list = [
