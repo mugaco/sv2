@@ -26,7 +26,7 @@ from commands.edit_alias_command import EditAliasCommand
 from commands.pull_request_command import PullRequestCommand
 from commands.remove_command import RemoveCommand
 from commands.move_command import MoveCommand
-from helpers import ensure_config_exists, load_branch_aliases, load_whos, get_repo_name,dialog_list, mprint
+from helpers import ensure_config_exists, load_branch_aliases, load_whos, get_repo_name,dialog_list, mprint, check_user
 
 
 class SV2App:
@@ -41,8 +41,9 @@ class SV2App:
         self.config_path = os.path.expanduser(config_path)
         ensure_config_exists(self.config_path)
         repo_name = get_repo_name()
+        self.whos = load_whos(whos_path)
+        check_user(self.whos,whos_path)
         get_stuff = True
-
         if repo_name is None:
             get_stuff = False
             r = []
@@ -51,7 +52,6 @@ class SV2App:
             repo_name = dialog_list("Elige el repositorio",r)
 
         all_repo_aliases = load_branch_aliases(self.config_path)
-        self.whos = load_whos(whos_path)
         self.aliases = all_repo_aliases.get(repo_name, {})
         self.main_name = "trunk2"
         self.pre_name = "pretrunk2"

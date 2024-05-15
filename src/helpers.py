@@ -249,23 +249,61 @@ def get_branch_name():
 #         )
 #     message = input().strip()
 #     return message
-def dialog(questions):
+def is_email(answers, current):
+    import re
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", current):
+        raise inquirer.errors.ValidationError('', reason='Por favor, introduce un email válido.')
+    return True
+
+def is_not_empty(answers, current):
+    if not current:
+        raise inquirer.errors.ValidationError('', reason='Este campo es obligatorio.')
+    return True
+
+def dialog(questions, rules=None):
     if isinstance(questions, str):
         questions_list = [
-            inquirer.Text('v', message=questions),
+            inquirer.Text('v', message=questions, validate=is_not_empty if (rules and 'required' in rules) else None),
         ]
         answers = inquirer.prompt(questions_list)
         return answers['v']
     
     elif isinstance(questions, dict):
-        questions_list = [
-            inquirer.Text(key, message=value) for key, value in questions.items()
-        ]
+        questions_list = []
+        for key, message in questions.items():
+            if rules and key in rules:
+                rule = rules[key]
+                if 'email' in rule:
+                    questions_list.append(inquirer.Text(key, message=message, validate=is_email))
+                elif 'required' in rule:
+                    questions_list.append(inquirer.Text(key, message=message, validate=is_not_empty))
+                else:
+                    questions_list.append(inquirer.Text(key, message=message))
+            else:
+                questions_list.append(inquirer.Text(key, message=message))
+        
         answers = inquirer.prompt(questions_list)
         return answers
     
     else:
         raise ValueError("El argumento debe ser una cadena o un diccionario")
+# def dialog(questions):
+#     if isinstance(questions, str):
+#         questions_list = [
+#             inquirer.Text('v', message=questions),
+#         ]
+#         answers = inquirer.prompt(questions_list)
+#         return answers['v']
+    
+#     elif isinstance(questions, dict):
+#         questions_list = [
+#             inquirer.Text(key, message=value) for key, value in questions.items()
+#         ]
+#         answers = inquirer.prompt(questions_list)
+#         return answers
+    
+#     else:
+#         raise ValueError("El argumento debe ser una cadena o un diccionario")
 
 def dialog_list(message, choices):
     questions = [
@@ -283,11 +321,28 @@ def dialog_list(message, choices):
     else:
         return None
 
+def check_user(whos,whos_path):
+    who = subprocess.check_output("whoami", shell=True, text=True).strip("-\n ")
+    
+    if who not in whos:
+        mprint("Aún no registrado en sv2","i")
+        datos = dialog({
+            "name":"Tu nombre",
+            "email":"Tue email en quartup"
+        },{
+            
+            "name":"required",
+            "email":"required|email"
+        })
+        whos[who] = datos
+        # Guardar los cambios en el archivo JSON
+        with open(whos_path, 'w') as file:
+            json.dump(whos, file, indent=4)
+   
 
 
 
-
-def mprint(message,value):
+def mprint(message,value,m=False):
     valid_values = ['s','i','e']
     if value not in valid_values:
         raise ValueError(f"'{value}' no es un valor válido. Los valores válidos son: {valid_values}")
@@ -305,11 +360,13 @@ def mprint(message,value):
         color = "blue"    
         simbolo = "ℹ"
 
-    console = Console() 
-    panel = Panel(message, title=title, border_style=color, title_align="left")
-    no_marco = f"[{color}]{simbolo}[/{color}] {message}"
+    console = Console()
+    if m: 
+        p = Panel(message, title=title, border_style=color, title_align="left")
+    else:    
+        p = f"[{color}]{simbolo}[/{color}] {message}"
     # console.print(panel)
-    console.print(no_marco)
+    console.print(p)
 # def success_message(message):
 #     console.print(f"[green]✔ {message}[/green]")
 
