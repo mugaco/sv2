@@ -264,7 +264,7 @@ def dialog(questions, rules=None):
     if isinstance(questions, str):
         questions = {"ques":questions}
         rules = {"ques":"required"}
-           
+
     questions_list = []
     for key, message in questions.items():
         if rules and key in rules:
@@ -280,7 +280,17 @@ def dialog(questions, rules=None):
         
     answers = inquirer.prompt(questions_list)
     return answers
-    
+def cconfirm(message):
+    question = [
+        inquirer.List(
+            'confirmation',
+            message=f"{message} [Sí/no]",
+            choices=['Sí', 'no'],
+            default='Sí'
+        )
+    ]
+    answer = inquirer.prompt(question)
+    return answer['confirmation'] == 'Sí'    
 # def dialog(questions):
 #     if isinstance(questions, str):
 #         questions_list = [

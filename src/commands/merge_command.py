@@ -1,7 +1,7 @@
 import subprocess
 from colorama import Fore, Style
 from . import Command
-from helpers import get_branch_name_from_aliases, get_alias_from_branch_name, get_parent,mprint
+from helpers import get_branch_name_from_aliases, get_alias_from_branch_name, get_parent,mprint,cconfirm
 
 
 class MergeCommand(Command):
@@ -21,81 +21,54 @@ class MergeCommand(Command):
         parent = get_parent(self.app.ancestor, self.app.main_name)
 
         if parent is None:
-            print(
-                Fore.RED
-                + f"Solo el administrador debería fusionar pre a main."
-                + Style.RESET_ALL
-            )
+            mprint("Solo el administrador puede fusionar 'pre' a 'main'.","e")
             return
         # print(self.app.pre_name)
         if parent == self.app.main_name:
             mprint(f"Una rama de nivel 'proyecto' no debe fusionarse directamente a 'pre'. En su lugar hacer 'sv2 to rama-proyecto' y desde ahí solicitar un pull request con 'sv2 pr'.","i",True)
             return
         branch_name = get_branch_name_from_aliases(args.alias, self.app.aliases)
-        # print(self.app.aliases)
-        # print(branch_name)
 
         ali = args.alias
 
         if not branch_name:
-            print(
-                Fore.RED
-                + f"No se encontró una rama correspondiente al alias '{args.alias}'."
-                + Style.RESET_ALL
-            )
+            mprint(f"No se encontró una rama correspondiente al alias '{args.alias}'.","e")
             return
 
         if branch_name == self.app.main_name:
-            print(
-                Fore.RED
-                + f"No se debe fusionar 'main' en ninguna rama."
-                + Style.RESET_ALL
-            )
+            mprint(f"No se puede fusionar 'main' a otra rama.","i")
             return
         else:
             branch_url = f"{self.app.branches}/{branch_name}"
-        # print(branch_url)
-        # return
+
         try:
             merge_command = f"svn merge {branch_url} --accept postpone"
             subprocess.check_output(merge_command, shell=True)
-            print(
-                Fore.GREEN
-                + f"Rama {branch_name} ({args.alias}) fusionada con éxtio en la rama actual."
-                + Style.RESET_ALL
-            )
+            mprint(f"Rama '{branch_name} ({args.alias})' fusionada con éxtio en la rama actual.","s")
 
             # Preguntar al usuario si desea hacer commit de los cambios fusionados
-            print(
-                Fore.YELLOW
-                + f"¿Desea hacer commit con el comentario 'merge from {branch_name}'? (y/n):"
-                + Style.RESET_ALL
-            )
-            response = input().strip().lower()
-            if response == "y":
+            response = cconfirm(f"¿Desea hacer commit con el comentario 'merge from {branch_name}'?")
+
+            if response:
                 commit_message = f"merge from {branch_name}"
                 commit_command = f'svn commit -m "{commit_message}"'
                 subprocess.check_output(commit_command, shell=True)
-                print(Fore.GREEN + "Commit realizado con éxtio." + Style.RESET_ALL)
+                mprint("Commit realizado con éxtio.",'s')
                 if self.app.pre_name == branch_name:
                     return
-                print(
-                    Fore.YELLOW
-                    + f"¿Desea borrar la rama {branch_name} ({ali})? (y/n):"
-                    + Style.RESET_ALL
-                )
-                response = input().strip().lower()
-                if response == "y":
+                response = cconfirm(f"¿Desea borrar la rama {branch_name} ({ali})?")
+                
+                if response:
                     # commit_command = f'svd branch -D {ali}'
                     commit_command = f'svn delete {branch_url} -m "Eliminada rama fusionada branch_name"'
                     # "svn delete {branch_url} -m \"Eliminada rama fusionada branch_name\""
                     # print(commit_command)
                     subprocess.check_output(commit_command, shell=True)
-                    print(Fore.GREEN + "Rama borrada con éxtio." + Style.RESET_ALL)
+                    mprint("Rama borrada con éxtio.","s")
                 else:
-                    print(Fore.CYAN + "La rama no se borró" + Style.RESET_ALL)
+                    mprint("La rama no se borró","i")
             else:
-                print(Fore.CYAN + "Commit cancelado por el usuario." + Style.RESET_ALL)
+                mprint("Commit cancelado por el usuario.","i")
 
         except subprocess.CalledProcessError as e:
-            print(Fore.RED + f"Error al fusionar la rama: {e}" + Style.RESET_ALL)
+            mprint(f"Error al fusionar la rama: {e}","e")
