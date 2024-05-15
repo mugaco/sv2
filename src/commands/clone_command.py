@@ -3,7 +3,7 @@ import subprocess
 from colorama import Fore, Style
 from . import Command
 from helpers import get_branch_name_from_aliases,mprint
-
+from halo import Halo
 
 class CloneCommand(Command):
     def __init__(self, app):
@@ -53,6 +53,8 @@ class CloneCommand(Command):
             svn_command.extend(["--depth", "files"])
 
         try:
+            spinner = Halo(text=f"Clonando rama {args.alias} ...", spinner="dots")
+            spinner.start()
             result = subprocess.run(
                 svn_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
             )
@@ -63,6 +65,7 @@ class CloneCommand(Command):
                     + Style.RESET_ALL
                 )
             else:
-                mprint(f"Rama clonada con éxtio en {directory}",'s')
+                spinner.stop() 
+                mprint(f"Rama clonada con éxtio en '{directory}'",'s')
         except Exception as e:
             print(Fore.RED + f"Error al ejecutar el comando SVN: {e}" + Style.RESET_ALL)
