@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+# Ignorar archivos compilados por Python
+*.pyc
+*.pyo
+*.py[cod]
+*.egg-info/
+
+svnAliases.json
+repos.json
+whos.json
+.env
+
