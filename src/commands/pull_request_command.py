@@ -50,8 +50,9 @@ class PullRequestCommand(Command):
             diff_command = (
                 f"svn diff {self.app.current_branch_url} {request_branch_url}"
             )
+            output_bytes = subprocess.check_output(diff_command, shell=True)
+            output = output_bytes.decode('utf-8', errors='replace')  # Decodifica con manejo de errores
 
-            output = subprocess.check_output(diff_command, shell=True, text=True)
             if output.strip():
                 # html_output = self.generate_html_diff(output)
                 html_output = self.generate_html_diff(output)
