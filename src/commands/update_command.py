@@ -62,6 +62,8 @@ class UpdateCommand(Command):
                 )
                 if branch_name == self.app.main_name:
                     branch_url = self.app.main
+                elif branch_name == self.app.pre_name:
+                    branch_url = self.app.pre    
                 else:
                     branch_url = f"{self.app.branches}/{branch_name}"
 
