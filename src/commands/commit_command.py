@@ -44,11 +44,13 @@ class CommitCommand(Command):
         message = args.message
         if not message:
             message = dialog("Por favor, añade un comentario para el commit")
-            spinner = Halo(text="Realizando commit...", spinner="dots")
-            spinner.start()
             if not message:
                 mprint("Commit cancelado: No se proporcionó un mensaje.",'e')
                 return
+
+        # Inicializar spinner siempre, después de validar el mensaje
+        spinner = Halo(text="Realizando commit...", spinner="dots")
+        spinner.start()
 
         if args.files:
             files_to_commit = " ".join(args.files)
@@ -71,4 +73,5 @@ class CommitCommand(Command):
             else:
                 spinner.warn("No había cambios para confirmar. Puedes comprobar que no haya archivos sin añadir con 'sv2 st'.")
         except subprocess.CalledProcessError as e:
+            spinner.stop()
             print(Fore.RED + f"Error al realizar el commit: {e}" + Style.RESET_ALL)
