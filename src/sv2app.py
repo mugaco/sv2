@@ -78,34 +78,54 @@ class SV2App:
             self.parent_branch_url = self.get_parent_branch_url()
 
         # Inicializar comando
+        list_cmd = ListCommand(self)
+        aliases_cmd = AliasesCommand(self)
+        build_aliases_cmd = BuildAliasesCommand(self)
+        edit_alias_cmd = EditAliasCommand(self)
+        info_cmd = InfoCommand(self)
+        update_cmd = UpdateCommand(self)
+        commit_cmd = CommitCommand(self)
+        branch_cmd = BranchCommand(self)
+        clone_cmd = CloneCommand(self)
+        merge_cmd = MergeCommand(self)
+        to_cmd = ToCommand(self)
+        revert_cmd = RevertCommand(self)
+        log_cmd = LogCommand(self)
+        diff_cmd = DiffCommand(self)
+        status_cmd = StatusCommand(self)
+        add_cmd = AddCommand(self)
+        pr_cmd = PullRequestCommand(self)
+        remove_cmd = RemoveCommand(self)
+        move_cmd = MoveCommand(self)
+        
         self.commands = {
-            "list": ListCommand(self),
-            "aliases": AliasesCommand(self),
-            "build-aliases": BuildAliasesCommand(self),
-            "edit-alias": EditAliasCommand(self),
-            "edal": EditAliasCommand(self),
-            "info": InfoCommand(self),
-            "i": InfoCommand(self),
-            "update": UpdateCommand(self),
-            "up": UpdateCommand(self),
-            "commit": CommitCommand(self),
-            "c": CommitCommand(self),
-            "branch": BranchCommand(self),
-            "br": BranchCommand(self),
-            "clone": CloneCommand(self),
-            "merge": MergeCommand(self),
-            "to": ToCommand(self),
-            "revert": RevertCommand(self),
-            "log": LogCommand(self),
-            "diff": DiffCommand(self),
-            "st": StatusCommand(self),
-            "status": StatusCommand(self),
-            "add": AddCommand(self),
-            "pr": PullRequestCommand(self),
-            "pull-request": PullRequestCommand(self),
-            "rm": RemoveCommand(self),
-            "mv": MoveCommand(self),
-            "move": MoveCommand(self),
+            "list": list_cmd,
+            "aliases": aliases_cmd,
+            "build-aliases": build_aliases_cmd,
+            "edit-alias": edit_alias_cmd,
+            "edal": edit_alias_cmd,
+            "info": info_cmd,
+            "i": info_cmd,
+            "update": update_cmd,
+            "up": update_cmd,
+            "commit": commit_cmd,
+            "c": commit_cmd,
+            "branch": branch_cmd,
+            "br": branch_cmd,
+            "clone": clone_cmd,
+            "merge": merge_cmd,
+            "to": to_cmd,
+            "revert": revert_cmd,
+            "log": log_cmd,
+            "diff": diff_cmd,
+            "st": status_cmd,
+            "status": status_cmd,
+            "add": add_cmd,
+            "pr": pr_cmd,
+            "pull-request": pr_cmd,
+            "rm": remove_cmd,
+            "mv": move_cmd,
+            "move": move_cmd,
         }
 
     def run(self):
